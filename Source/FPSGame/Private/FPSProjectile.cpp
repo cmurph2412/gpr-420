@@ -35,10 +35,28 @@ AFPSProjectile::AFPSProjectile()
 void AFPSProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	// Only add impulse and destroy projectile if we hit a physics
-	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && OtherComp->IsSimulatingPhysics())
+	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr) && OtherComp->IsSimulatingPhysics())
 	{
 		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
 
+		//Changing Scale
+		FVector Scale = OtherComp->GetComponentScale();
+		Scale *= 0.8f;
+		if (Scale.GetMin() < 0.5f)
+		{
+			OtherActor->Destroy();
+		}
+		else
+		{
+			OtherComp->SetWorldScale3D(Scale);
+		}
+
+		//Changing Color
+		UMaterialInstanceDynamic* MatInst = OtherComp->CreateAndSetMaterialInstanceDynamic(0);
+		if (MatInst)
+		{
+			MatInst->SetVectorParameterValue("Color", FLinearColor::MakeRandomColor());
+		}
 		Destroy();
 	}
 }
