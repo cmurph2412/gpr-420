@@ -6,12 +6,14 @@
 #include "GameFramework/Character.h"
 #include "FPSCharacter.generated.h"
 
+
 class UInputComponent;
 class USkeletalMeshComponent;
 class UCameraComponent;
 class AFPSProjectile;
 class USoundBase;
 class UAnimSequence;
+class AFPSBombActor;
 
 
 UCLASS()

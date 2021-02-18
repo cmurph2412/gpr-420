@@ -5,7 +5,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "FPSBombActor.generated.h"
-#include "Kismet/GameplayStatics.h"
+
+class UStaticMeshComponent;
+class UParticleSystem;
 
 UCLASS()
 class FPSGAME_API AFPSBombActor : public AActor
@@ -17,6 +19,15 @@ public:
 	AFPSBombActor();
 
 protected:
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UStaticMeshComponent* MeshComp;
+
+	UMaterialInstanceDynamic* MaterialInst;
+
+	FLinearColor CurrentColor;
+
+	FLinearColor TargetColor;
 
 	UPROPERTY(EditDefaultsOnly, Category = "BombActor")
 	float ExplodeDelay;
