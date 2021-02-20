@@ -39,6 +39,7 @@ void AFPSProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPr
 	{
 		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
 
+		/*
 		//Changing Scale
 		FVector Scale = OtherComp->GetComponentScale();
 		Scale *= 0.8f;
@@ -50,13 +51,31 @@ void AFPSProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPr
 		{
 			OtherComp->SetWorldScale3D(Scale);
 		}
+		*/
 
+		/*
 		//Changing Color
 		UMaterialInstanceDynamic* MatInst = OtherComp->CreateAndSetMaterialInstanceDynamic(0);
 		if (MatInst)
 		{
 			MatInst->SetVectorParameterValue("Color", FLinearColor::MakeRandomColor());
+
+		//AActor* myBomb = GetWorld()->SpawnActor<AActor>(, GetActorLocation(), GetActorRotation());
+		*/
+
+		//Changing Scale
+		FVector Scale = OtherComp->GetComponentScale();
+		Scale *= 0.25f;
+		if (Scale.GetMin() < 0.25f)
+		{
+			OtherActor->Destroy();
 		}
+		else
+		{
+			OtherComp->SetWorldScale3D(Scale);
+		}
+
 		Destroy();
+		
 	}
 }

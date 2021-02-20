@@ -45,6 +45,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Bombs")
 	TSubclassOf<AActor> BombClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "ChargeShot")
+	TSubclassOf<AActor> ChargeShot;
+
 	/** Sound to play each time we fire */
 	UPROPERTY(EditDefaultsOnly, Category="Gameplay")
 	USoundBase* FireSound;
@@ -60,6 +63,9 @@ protected:
 
 	/* Spawns Bomb*/
 	void SpawnBomb();
+
+	/* Spawns charge shot*/
+	void SpawnChargeShot();
 
 	/** Handles moving forward/backward */
 	void MoveForward(float Val);
