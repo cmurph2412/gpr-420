@@ -104,8 +104,6 @@ void AFPSCharacter::SpawnChargeShot()
 		// Use controller rotation which is our view direction in first person
 		FRotator MuzzleRotation = GetControlRotation();
 
-		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
-
 		//Set Spawn Collision Handling Override
 		FActorSpawnParameters ActorSpawnParams;
 		ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
@@ -117,7 +115,7 @@ void AFPSCharacter::SpawnChargeShot()
 	// try and play the sound if specified
 	if (FireSound)
 	{
-		//UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
 	}
 
 	// try and play a firing animation if specified

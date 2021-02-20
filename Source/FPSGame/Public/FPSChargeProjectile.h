@@ -24,6 +24,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
 		UProjectileMovementComponent* ProjectileMovement;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
+		UParticleSystem* ExplosionTemplate;
+
 public:
 
 	AFPSChargeProjectile();

@@ -4,6 +4,7 @@
 #include "FPSChargeProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 AFPSChargeProjectile::AFPSChargeProjectile()
 {
@@ -38,45 +39,31 @@ void AFPSChargeProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActo
 	// Only add impulse and destroy projectile if we hit a physics
 	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr) && OtherComp->IsSimulatingPhysics())
 	{
-		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
+		UGameplayStatics::SpawnEmitterAtLocation(this, ExplosionTemplate, GetActorLocation());
 
-		/*
-		//Changing Scale
-		FVector Scale = OtherComp->GetComponentScale();
-		Scale *= 0.8f;
-		if (Scale.GetMin() < 0.5f)
+		FCollisionObjectQueryParams QueryParams;
+		QueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+		QueryParams.AddObjectTypesToQuery(ECC_PhysicsBody);
+
+		FCollisionShape CollShape;
+		CollShape.SetSphere(500.0f);
+
+		TArray<FOverlapResult> OutOverlaps;
+		GetWorld()->OverlapMultiByObjectType(OutOverlaps, GetActorLocation(), FQuat::Identity, QueryParams, CollShape);
+
+		for (FOverlapResult Result : OutOverlaps)
 		{
-			OtherActor->Destroy();
+			UPrimitiveComponent* Overlap = Result.GetComponent();
+			if (Overlap && Overlap->IsSimulatingPhysics())
+			{
+				UMaterialInstanceDynamic* MatInst = Overlap->CreateAndSetMaterialInstanceDynamic(0);
+				if (MatInst)
+				{
+					Overlap->DestroyComponent();
+					//MatInst->SetVectorParameterValue("Color", TargetColor);
+				}
+			}
 		}
-		else
-		{
-			OtherComp->SetWorldScale3D(Scale);
-		}
-		*/
-
-		/*
-		//Changing Color
-		UMaterialInstanceDynamic* MatInst = OtherComp->CreateAndSetMaterialInstanceDynamic(0);
-		if (MatInst)
-		{
-			MatInst->SetVectorParameterValue("Color", FLinearColor::MakeRandomColor());
-
-		//AActor* myBomb = GetWorld()->SpawnActor<AActor>(, GetActorLocation(), GetActorRotation());
-		*/
-
-		//Changing Scale
-		FVector Scale = OtherComp->GetComponentScale();
-		Scale *= 0.25f;
-		if (Scale.GetMin() < 0.25f)
-		{
-			OtherActor->Destroy();
-		}
-		else
-		{
-			OtherComp->SetWorldScale3D(Scale);
-		}
-
-		//Destroy();
-
+		Destroy();
 	}
 }
