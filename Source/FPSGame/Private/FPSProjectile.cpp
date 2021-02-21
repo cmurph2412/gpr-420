@@ -64,20 +64,18 @@ void AFPSProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPr
 		*/
 		//AActor test = *OtherActor;
 
-		DuplicateObject(OtherComp, OtherActor);
-
-
 		//Changing Scale
 		FVector Scale = OtherComp->GetComponentScale();
 		Scale *= 0.25f;
-		if (Scale.GetMin() < 0.25f)
+		if (Scale.GetMin() >= 0.25f)
 		{
-			OtherActor->Destroy();
+			for (int i = 0; i < 4; i++)
+			{
+				AActor* cube = GetWorld()->SpawnActor<AActor>(Cube, OtherComp->GetComponentLocation(), OtherComp->GetComponentRotation());
+				cube->SetActorScale3D(Scale);
+			}
 		}
-		else
-		{
-			OtherComp->SetWorldScale3D(Scale);
-		}
+		OtherActor->Destroy();
 
 		Destroy();
 		

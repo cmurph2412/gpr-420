@@ -43,7 +43,7 @@ void AFPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AFPSCharacter::Fire);
 
 	PlayerInputComponent->BindAction("SpawnBomb", IE_Pressed, this, &AFPSCharacter::SpawnBomb);
-	PlayerInputComponent->BindAction("ChargeShot", IE_Released, this, &AFPSCharacter::SpawnChargeShot);
+	PlayerInputComponent->BindAction("ChargeShot", IE_Pressed, this, &AFPSCharacter::SpawnChargeShot);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AFPSCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AFPSCharacter::MoveRight);
