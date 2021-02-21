@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "FPSBombActor.h"
+#include "FPSChargeProjectile.h"
 //#include "Animation/AnimSequence.h"
 
 
@@ -42,7 +43,10 @@ void AFPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AFPSCharacter::Fire);
 
+	//Bomb and charge inputs
 	PlayerInputComponent->BindAction("SpawnBomb", IE_Pressed, this, &AFPSCharacter::SpawnBomb);
+	PlayerInputComponent->BindAction("StartCharge", IE_Pressed, this, &AFPSCharacter::StartCharge);
+	PlayerInputComponent->BindAction("StartCharge", IE_Released, this, &AFPSCharacter::EndCharge);
 	PlayerInputComponent->BindAction("ChargeShot", IE_Pressed, this, &AFPSCharacter::SpawnChargeShot);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AFPSCharacter::MoveForward);
@@ -51,7 +55,6 @@ void AFPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 }
-
 
 void AFPSCharacter::Fire()
 {
@@ -89,15 +92,26 @@ void AFPSCharacter::Fire()
 	}
 }
 
+//Spawn bomb at player location
 void AFPSCharacter::SpawnBomb()
 {
 	AActor* myBomb = GetWorld()->SpawnActor<AActor>(BombClass, GetActorLocation(), GetActorRotation());
 }
 
+//Spawns charge shot
 void AFPSCharacter::SpawnChargeShot()
 {
-	//AActor* myBomb = GetWorld()->SpawnActor<AActor>(BombClass, GetActorLocation(), GetActorRotation());
+	//Gets charge amount from charge timer
+	chargeAmount = GetWorldTimerManager().GetTimerElapsed(timer);
+	if (chargeAmount < 1.0f)
+	{
+		chargeAmount = 1.0f;
+	}
 
+	//Scales projectile based on charge amount
+	FVector newScale = FVector(chargeAmount, chargeAmount, chargeAmount);
+
+	//If cooldown hasn't reset doesn't allow shot
 	if (cooldown == false)
 	{
 		return;
@@ -116,7 +130,9 @@ void AFPSCharacter::SpawnChargeShot()
 		ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
 		// spawn the projectile at the muzzle
-		GetWorld()->SpawnActor<AActor>(ChargeShot, MuzzleLocation, MuzzleRotation, ActorSpawnParams);
+		AFPSChargeProjectile* bullet = GetWorld()->SpawnActor<AFPSChargeProjectile>(ChargeShot, MuzzleLocation, MuzzleRotation, ActorSpawnParams);
+		bullet->SetActorScale3D(newScale);
+		bullet->SetExplosionSize(chargeAmount * 100.0f);
 	}
 
 	// try and play the sound if specified
@@ -136,11 +152,25 @@ void AFPSCharacter::SpawnChargeShot()
 		}
 	}
 
-	FTimerHandle Explode_TimerHandle;
-	GetWorldTimerManager().SetTimer(Explode_TimerHandle, this, &AFPSCharacter::EndCooldown, 3.0f);
+	//Starts cooldown timer
+	FTimerHandle chargeCooldownTimer;
+	GetWorldTimerManager().SetTimer(chargeCooldownTimer, this, &AFPSCharacter::EndCooldown, 3.0f);
 	cooldown = false;
 }
 
+//Start charge timer
+void AFPSCharacter::StartCharge()
+{
+	GetWorldTimerManager().SetTimer(timer, this, &AFPSCharacter::SpawnChargeShot, 5.0f);
+}
+
+//End charge timer
+void AFPSCharacter::EndCharge()
+{
+	GetWorldTimerManager().ClearTimer(timer);
+}
+
+//End charge shot cooldown
 void AFPSCharacter::EndCooldown()
 {
 	cooldown = true;

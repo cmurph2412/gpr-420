@@ -33,7 +33,7 @@ AFPSChargeProjectile::AFPSChargeProjectile()
 	InitialLifeSpan = 3.0f;
 }
 
-
+//When a cube is hit by the projectile
 void AFPSChargeProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	// Only add impulse and destroy projectile if we hit a physics
@@ -45,12 +45,13 @@ void AFPSChargeProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActo
 		QueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
 		QueryParams.AddObjectTypesToQuery(ECC_PhysicsBody);
 
+		//Creates explosion
 		FCollisionShape CollShape;
-		CollShape.SetSphere(500.0f);
+		CollShape.SetSphere(explosionSize);
 
+		//Destroyes overlapping cubes
 		TArray<FOverlapResult> OutOverlaps;
 		GetWorld()->OverlapMultiByObjectType(OutOverlaps, GetActorLocation(), FQuat::Identity, QueryParams, CollShape);
-
 		for (FOverlapResult Result : OutOverlaps)
 		{
 			UPrimitiveComponent* Overlap = Result.GetComponent();
@@ -60,10 +61,9 @@ void AFPSChargeProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActo
 				if (MatInst)
 				{
 					Overlap->DestroyComponent();
-					//MatInst->SetVectorParameterValue("Color", TargetColor);
 				}
 			}
 		}
-		Destroy();
+		Destroy(); //Destroyes initial projectile
 	}
 }

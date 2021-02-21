@@ -20,6 +20,7 @@ AFPSBombActor::AFPSBombActor()
 	ExplodeDelay = 2.0f;
 }
 
+//Explodes (triggered based on timer)
 void AFPSBombActor::Explode()
 {
 	UGameplayStatics::SpawnEmitterAtLocation(this, ExplosionTemplate, GetActorLocation());
@@ -28,12 +29,13 @@ void AFPSBombActor::Explode()
 	QueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
 	QueryParams.AddObjectTypesToQuery(ECC_PhysicsBody);
 
+	//Creates explosion size
 	FCollisionShape CollShape;
 	CollShape.SetSphere(500.0f);
 
+	//Colors all cubes in range
 	TArray<FOverlapResult> OutOverlaps;
 	GetWorld()->OverlapMultiByObjectType(OutOverlaps, GetActorLocation(), FQuat::Identity, QueryParams, CollShape);
-
 	for (FOverlapResult Result : OutOverlaps)
 	{
 		UPrimitiveComponent* Overlap = Result.GetComponent();
@@ -47,6 +49,7 @@ void AFPSBombActor::Explode()
 		}
 	}
 
+	//Destroys bomb
 	Destroy();
 }
 
@@ -55,6 +58,7 @@ void AFPSBombActor::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	//Start explosion timer
 	FTimerHandle Explode_TimerHandle;
 	GetWorldTimerManager().SetTimer(Explode_TimerHandle, this, &AFPSBombActor::Explode, ExplodeDelay);
 
@@ -72,6 +76,7 @@ void AFPSBombActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//Change color of bomb over time
 	if (MaterialInst)
 	{
 		float Progress = (GetWorld()->TimeSeconds - CreationTime) / ExplodeDelay;

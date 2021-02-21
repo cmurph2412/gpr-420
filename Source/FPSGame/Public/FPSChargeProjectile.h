@@ -27,6 +27,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
 		UParticleSystem* ExplosionTemplate;
 
+	float explosionSize;
+
 public:
 
 	AFPSChargeProjectile();
@@ -40,6 +42,8 @@ public:
 
 	/** Returns ProjectileMovement subobject **/
 	UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovement; }
+
+	void SetExplosionSize(float newSize) { explosionSize = newSize; }
 
 };
 

@@ -14,6 +14,7 @@ class AFPSProjectile;
 class USoundBase;
 class UAnimSequence;
 class AFPSBombActor;
+class AFPSChargeProjectile;
 
 
 UCLASS()
@@ -46,7 +47,7 @@ public:
 	TSubclassOf<AActor> BombClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "ChargeShot")
-	TSubclassOf<AActor> ChargeShot;
+	TSubclassOf<AFPSChargeProjectile> ChargeShot;
 
 	/** Sound to play each time we fire */
 	UPROPERTY(EditDefaultsOnly, Category="Gameplay")
@@ -67,6 +68,12 @@ protected:
 	/* Spawns charge shot*/
 	void SpawnChargeShot();
 
+	/* Start charge*/
+	void StartCharge();
+
+	/* Ends charge*/
+	void EndCharge();
+
 	/** Handles moving forward/backward */
 	void MoveForward(float Val);
 
@@ -78,6 +85,9 @@ protected:
 	void EndCooldown();
 
 	bool cooldown;
+	float chargeAmount;
+
+	FTimerHandle timer;
 
 public:
 	/** Returns Mesh1P subobject **/

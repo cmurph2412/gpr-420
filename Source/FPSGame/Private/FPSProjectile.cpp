@@ -3,6 +3,7 @@
 #include "FPSProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 AFPSProjectile::AFPSProjectile() 
 {
@@ -64,10 +65,10 @@ void AFPSProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPr
 		*/
 		//AActor test = *OtherActor;
 
-		//Changing Scale
+		//Breaking into smaller cubes
 		FVector Scale = OtherComp->GetComponentScale();
 		Scale *= 0.25f;
-		if (Scale.GetMin() >= 0.25f)
+		if (Scale.GetMin() >= 0.25f) //If cube isn't small spawns more
 		{
 			for (int i = 0; i < 4; i++)
 			{
@@ -75,8 +76,13 @@ void AFPSProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPr
 				cube->SetActorScale3D(Scale);
 			}
 		}
-		OtherActor->Destroy();
+		else //If too small only spawns explosion
+		{
+			UGameplayStatics::SpawnEmitterAtLocation(this, ExplosionTemplate, GetActorLocation());
+		}
 
+		//Destroyes initial cube and bullet
+		OtherActor->Destroy();
 		Destroy();
 		
 	}
