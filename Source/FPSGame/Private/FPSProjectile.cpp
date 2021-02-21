@@ -62,6 +62,10 @@ void AFPSProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPr
 
 		//AActor* myBomb = GetWorld()->SpawnActor<AActor>(, GetActorLocation(), GetActorRotation());
 		*/
+		//AActor test = *OtherActor;
+
+		DuplicateObject(OtherComp, OtherActor);
+
 
 		//Changing Scale
 		FVector Scale = OtherComp->GetComponentScale();

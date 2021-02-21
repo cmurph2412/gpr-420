@@ -29,6 +29,8 @@ AFPSCharacter::AFPSCharacter()
 	GunMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FP_Gun"));
 	GunMeshComponent->CastShadow = false;
 	GunMeshComponent->SetupAttachment(Mesh1PComponent, "GripPoint");
+
+	cooldown = true;
 }
 
 
@@ -41,7 +43,7 @@ void AFPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AFPSCharacter::Fire);
 
 	PlayerInputComponent->BindAction("SpawnBomb", IE_Pressed, this, &AFPSCharacter::SpawnBomb);
-	PlayerInputComponent->BindAction("ChargeShot", IE_Pressed, this, &AFPSCharacter::SpawnChargeShot);
+	PlayerInputComponent->BindAction("ChargeShot", IE_Released, this, &AFPSCharacter::SpawnChargeShot);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AFPSCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AFPSCharacter::MoveRight);
@@ -96,6 +98,11 @@ void AFPSCharacter::SpawnChargeShot()
 {
 	//AActor* myBomb = GetWorld()->SpawnActor<AActor>(BombClass, GetActorLocation(), GetActorRotation());
 
+	if (cooldown == false)
+	{
+		return;
+	}
+
 	// try and fire a projectile
 	if (ProjectileClass)
 	{
@@ -128,8 +135,16 @@ void AFPSCharacter::SpawnChargeShot()
 			AnimInstance->PlaySlotAnimationAsDynamicMontage(FireAnimation, "Arms", 0.0f);
 		}
 	}
+
+	FTimerHandle Explode_TimerHandle;
+	GetWorldTimerManager().SetTimer(Explode_TimerHandle, this, &AFPSCharacter::EndCooldown, 3.0f);
+	cooldown = false;
 }
 
+void AFPSCharacter::EndCooldown()
+{
+	cooldown = true;
+}
 
 void AFPSCharacter::MoveForward(float Value)
 {
